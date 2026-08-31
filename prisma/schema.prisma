@@ -1,0 +1,86 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum UserRole {
+  ADMIN
+  STAFF
+}
+
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  OFFLINE
+  DISABLED
+}
+
+enum TransactionStatus {
+  PENDING
+  PAID
+  CANCEL
+  CLOSE
+}
+
+enum FnbCategory {
+  FOOD
+  DRINK
+  SNACK
+  OTHER
+}
+
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  QRIS
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum OrderStatus {
+  DRAFT
+  SEND
+  CANCELLED
+}
+
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @db.VarChar(50) @unique
+  password String
+  role UserRole @default(STAFF)
+
+  deleted Boolean @default(false)
+}
+
+
+model Setting {
+  id Int @id @default(autoincrement())
+  isActive Boolean @default(true)
+  taxPercent       Decimal @default(10.00) @db.Decimal(5,2) // %
+  servicePercent Decimal @default(5.00)  @db.Decimal(5,2) // %
+}
+
+model Room {
+  id Int @id @default(autoincrement())
+  name String @unique
+  capacity Int @default(0)
+  type String @default("medium")
+  hourlyRate Decimal @db.Decimal(12,2) @default(0)
+  status RoomStatus @default(AVAILABLE)
+}
+

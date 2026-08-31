@@ -1,0 +1,10 @@
+@url=http://localhost:3000
+
+###
+POST {{url}}/login
+Content-Type: Application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
