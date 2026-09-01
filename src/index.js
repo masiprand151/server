@@ -6,13 +6,14 @@ require("dotenv").config();
 const web = express();
 web.use(
   cors({
-    origin: ["*"],
+    origin: "*",
   }),
 );
 
 web.use(express.json());
 
 web.use(require("./routes/user.route"));
+web.use(require("./routes/room.route"));
 
 web.use((err, req, res, next) => {
   console.log(err);

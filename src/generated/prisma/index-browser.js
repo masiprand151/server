@@ -145,6 +145,26 @@ exports.Prisma.RoomScalarFieldEnum = {
   status: 'status'
 };
 
+exports.Prisma.CustomerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  roomId: 'roomId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  closed: 'closed',
+  durationMinute: 'durationMinute',
+  extraMinute: 'extraMinute',
+  freeMinute: 'freeMinute',
+  deleted: 'deleted',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -158,6 +178,16 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
 exports.Prisma.RoomOrderByRelevanceFieldEnum = {
   name: 'name',
   type: 'type'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.CustomerOrderByRelevanceFieldEnum = {
+  name: 'name',
+  phone: 'phone'
 };
 exports.UserRole = exports.$Enums.UserRole = {
   ADMIN: 'ADMIN',
@@ -175,7 +205,9 @@ exports.RoomStatus = exports.$Enums.RoomStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   Setting: 'Setting',
-  Room: 'Room'
+  Room: 'Room',
+  Customer: 'Customer',
+  Session: 'Session'
 };
 
 /**

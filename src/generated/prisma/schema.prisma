@@ -76,4 +76,39 @@ model Room {
   type       String     @default("medium")
   hourlyRate Decimal    @default(0) @db.Decimal(12, 2)
   status     RoomStatus @default(AVAILABLE)
+
+  session Session[]
+}
+
+model Customer {
+  id    Int     @id @default(autoincrement())
+  name  String
+  phone String?
+
+  session Session[]
+}
+
+model Session {
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  roomId Int
+  room   Room @relation(fields: [roomId], references: [id])
+
+  startTime DateTime
+  endTime   DateTime
+  closed    Boolean  @default(false)
+
+  durationMinute Int
+  extraMinute    Int @default(0)
+  freeMinute     Int @default(0)
+
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([customerId])
+  @@index([roomId])
+  @@index([createdAt])
 }

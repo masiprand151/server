@@ -117,6 +117,26 @@ exports.Prisma.RoomScalarFieldEnum = {
   status: 'status'
 };
 
+exports.Prisma.CustomerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  roomId: 'roomId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  closed: 'closed',
+  durationMinute: 'durationMinute',
+  extraMinute: 'extraMinute',
+  freeMinute: 'freeMinute',
+  deleted: 'deleted',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -130,6 +150,16 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
 exports.Prisma.RoomOrderByRelevanceFieldEnum = {
   name: 'name',
   type: 'type'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.CustomerOrderByRelevanceFieldEnum = {
+  name: 'name',
+  phone: 'phone'
 };
 exports.UserRole = exports.$Enums.UserRole = {
   ADMIN: 'ADMIN',
@@ -179,7 +209,9 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   Setting: 'Setting',
-  Room: 'Room'
+  Room: 'Room',
+  Customer: 'Customer',
+  Session: 'Session'
 };
 /**
  * Create the Client
@@ -210,7 +242,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
@@ -228,13 +260,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum UserRole {\n  ADMIN\n  STAFF\n}\n\nenum RoomStatus {\n  AVAILABLE\n  OCCUPIED\n  MAINTENANCE\n  OFFLINE\n  DISABLED\n}\n\nenum TransactionStatus {\n  PENDING\n  PAID\n  CANCEL\n  CLOSE\n}\n\nenum FnbCategory {\n  FOOD\n  DRINK\n  SNACK\n  OTHER\n}\n\nenum PaymentMethod {\n  CASH\n  TRANSFER\n  QRIS\n}\n\nenum PaymentStatus {\n  PENDING\n  PAID\n  CANCELLED\n}\n\nenum OrderStatus {\n  DRAFT\n  SEND\n  CANCELLED\n}\n\nmodel User {\n  id       Int      @id @default(autoincrement())\n  username String   @unique @db.VarChar(50)\n  password String\n  role     UserRole @default(STAFF)\n\n  deleted Boolean @default(false)\n}\n\nmodel Setting {\n  id             Int     @id @default(autoincrement())\n  isActive       Boolean @default(true)\n  taxPercent     Decimal @default(10.00) @db.Decimal(5, 2) // %\n  servicePercent Decimal @default(5.00) @db.Decimal(5, 2) // %\n}\n\nmodel Room {\n  id         Int        @id @default(autoincrement())\n  name       String     @unique\n  capacity   Int        @default(0)\n  type       String     @default(\"medium\")\n  hourlyRate Decimal    @default(0) @db.Decimal(12, 2)\n  status     RoomStatus @default(AVAILABLE)\n}\n",
-  "inlineSchemaHash": "8c4ea39072f19ac1f19808daa804102f4484f1317161f7f251bae0316b4f1cf7",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum UserRole {\n  ADMIN\n  STAFF\n}\n\nenum RoomStatus {\n  AVAILABLE\n  OCCUPIED\n  MAINTENANCE\n  OFFLINE\n  DISABLED\n}\n\nenum TransactionStatus {\n  PENDING\n  PAID\n  CANCEL\n  CLOSE\n}\n\nenum FnbCategory {\n  FOOD\n  DRINK\n  SNACK\n  OTHER\n}\n\nenum PaymentMethod {\n  CASH\n  TRANSFER\n  QRIS\n}\n\nenum PaymentStatus {\n  PENDING\n  PAID\n  CANCELLED\n}\n\nenum OrderStatus {\n  DRAFT\n  SEND\n  CANCELLED\n}\n\nmodel User {\n  id       Int      @id @default(autoincrement())\n  username String   @unique @db.VarChar(50)\n  password String\n  role     UserRole @default(STAFF)\n\n  deleted Boolean @default(false)\n}\n\nmodel Setting {\n  id             Int     @id @default(autoincrement())\n  isActive       Boolean @default(true)\n  taxPercent     Decimal @default(10.00) @db.Decimal(5, 2) // %\n  servicePercent Decimal @default(5.00) @db.Decimal(5, 2) // %\n}\n\nmodel Room {\n  id         Int        @id @default(autoincrement())\n  name       String     @unique\n  capacity   Int        @default(0)\n  type       String     @default(\"medium\")\n  hourlyRate Decimal    @default(0) @db.Decimal(12, 2)\n  status     RoomStatus @default(AVAILABLE)\n\n  session Session[]\n}\n\nmodel Customer {\n  id    Int     @id @default(autoincrement())\n  name  String\n  phone String?\n\n  session Session[]\n}\n\nmodel Session {\n  id         Int      @id @default(autoincrement())\n  customerId Int\n  customer   Customer @relation(fields: [customerId], references: [id])\n\n  roomId Int\n  room   Room @relation(fields: [roomId], references: [id])\n\n  startTime DateTime\n  endTime   DateTime\n  closed    Boolean  @default(false)\n\n  durationMinute Int\n  extraMinute    Int @default(0)\n  freeMinute     Int @default(0)\n\n  deleted Boolean @default(false)\n\n  createdAt DateTime @default(now())\n\n  @@index([customerId])\n  @@index([roomId])\n  @@index([createdAt])\n}\n",
+  "inlineSchemaHash": "6161d0d3d9d21447fd3867b1e672879825d075c31135d4841d4c68b755e05bb2",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"}],\"dbName\":null},\"Setting\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"taxPercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"servicePercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"}],\"dbName\":null},\"Room\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"capacity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hourlyRate\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"RoomStatus\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"}],\"dbName\":null},\"Setting\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"taxPercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"servicePercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"}],\"dbName\":null},\"Room\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"capacity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hourlyRate\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"RoomStatus\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"RoomToSession\"}],\"dbName\":null},\"Customer\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"CustomerToSession\"}],\"dbName\":null},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"customerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"customer\",\"kind\":\"object\",\"type\":\"Customer\",\"relationName\":\"CustomerToSession\"},{\"name\":\"roomId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"room\",\"kind\":\"object\",\"type\":\"Room\",\"relationName\":\"RoomToSession\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"closed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"durationMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"extraMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"freeMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
