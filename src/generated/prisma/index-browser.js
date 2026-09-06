@@ -162,7 +162,96 @@ exports.Prisma.SessionScalarFieldEnum = {
   extraMinute: 'extraMinute',
   freeMinute: 'freeMinute',
   deleted: 'deleted',
+  userId: 'userId',
+  userOut: 'userOut',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  roomTotal: 'roomTotal',
+  roomDiscount: 'roomDiscount',
+  fnbTotal: 'fnbTotal',
+  companionTotal: 'companionTotal',
+  subTotal: 'subTotal',
+  tax: 'tax',
+  service: 'service',
+  grandTotal: 'grandTotal',
+  note: 'note'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  method: 'method',
+  status: 'status',
+  amount: 'amount',
+  change: 'change',
+  paidAt: 'paidAt',
+  userId: 'userId',
+  note: 'note',
+  transactionId: 'transactionId'
+};
+
+exports.Prisma.FnbScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  category: 'category',
+  trackStock: 'trackStock',
+  stock: 'stock',
+  price: 'price',
+  deleted: 'deleted'
+};
+
+exports.Prisma.FnbTrackStockScalarFieldEnum = {
+  id: 'id',
+  suplayer: 'suplayer',
+  fnbId: 'fnbId',
+  userId: 'userId',
+  type: 'type',
+  qty: 'qty',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.FnbOrderScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  transactionId: 'transactionId',
+  itemId: 'itemId',
+  total: 'total',
+  note: 'note',
+  draftAt: 'draftAt',
+  sendAt: 'sendAt',
+  cancelAt: 'cancelAt'
+};
+
+exports.Prisma.FnbItemScalarFieldEnum = {
+  id: 'id',
+  fnbId: 'fnbId',
+  qty: 'qty',
+  name: 'name',
+  price: 'price',
+  category: 'category'
+};
+
+exports.Prisma.CompanionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  hourlyRate: 'hourlyRate',
+  available: 'available'
+};
+
+exports.Prisma.CompanionOrderScalarFieldEnum = {
+  id: 'id',
+  companionId: 'companionId',
+  durationMinute: 'durationMinute',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  total: 'total',
+  finisedAt: 'finisedAt',
+  canceldAt: 'canceldAt',
+  createdAt: 'createdAt',
+  transactionId: 'transactionId'
 };
 
 exports.Prisma.SortOrder = {
@@ -189,6 +278,44 @@ exports.Prisma.CustomerOrderByRelevanceFieldEnum = {
   name: 'name',
   phone: 'phone'
 };
+
+exports.Prisma.TransactionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  note: 'note'
+};
+
+exports.Prisma.PaymentOrderByRelevanceFieldEnum = {
+  note: 'note',
+  transactionId: 'transactionId'
+};
+
+exports.Prisma.FnbOrderByRelevanceFieldEnum = {
+  name: 'name'
+};
+
+exports.Prisma.FnbTrackStockOrderByRelevanceFieldEnum = {
+  id: 'id',
+  suplayer: 'suplayer'
+};
+
+exports.Prisma.FnbOrderOrderByRelevanceFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  note: 'note'
+};
+
+exports.Prisma.FnbItemOrderByRelevanceFieldEnum = {
+  name: 'name'
+};
+
+exports.Prisma.CompanionOrderByRelevanceFieldEnum = {
+  name: 'name'
+};
+
+exports.Prisma.CompanionOrderOrderByRelevanceFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId'
+};
 exports.UserRole = exports.$Enums.UserRole = {
   ADMIN: 'ADMIN',
   STAFF: 'STAFF'
@@ -202,12 +329,50 @@ exports.RoomStatus = exports.$Enums.RoomStatus = {
   DISABLED: 'DISABLED'
 };
 
+exports.PaymentMethod = exports.$Enums.PaymentMethod = {
+  CASH: 'CASH',
+  TRANSFER: 'TRANSFER',
+  QRIS: 'QRIS'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.FnbCategory = exports.$Enums.FnbCategory = {
+  FOOD: 'FOOD',
+  DRINK: 'DRINK',
+  SNACK: 'SNACK',
+  OTHER: 'OTHER'
+};
+
+exports.TypeTrackStock = exports.$Enums.TypeTrackStock = {
+  IN: 'IN',
+  OUT: 'OUT'
+};
+
+exports.OrderStatus = exports.$Enums.OrderStatus = {
+  DRAFT: 'DRAFT',
+  SEND: 'SEND',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Setting: 'Setting',
   Room: 'Room',
   Customer: 'Customer',
-  Session: 'Session'
+  Session: 'Session',
+  Transaction: 'Transaction',
+  Payment: 'Payment',
+  Fnb: 'Fnb',
+  FnbTrackStock: 'FnbTrackStock',
+  FnbOrder: 'FnbOrder',
+  FnbItem: 'FnbItem',
+  Companion: 'Companion',
+  CompanionOrder: 'CompanionOrder'
 };
 
 /**

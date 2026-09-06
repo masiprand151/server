@@ -9,6 +9,9 @@ const getRoomWithSession = async (req, res, next) => {
           where: {
             closed: false,
           },
+          include: {
+            customer: true,
+          },
         },
       },
     });

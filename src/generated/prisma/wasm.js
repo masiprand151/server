@@ -134,7 +134,96 @@ exports.Prisma.SessionScalarFieldEnum = {
   extraMinute: 'extraMinute',
   freeMinute: 'freeMinute',
   deleted: 'deleted',
+  userId: 'userId',
+  userOut: 'userOut',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  roomTotal: 'roomTotal',
+  roomDiscount: 'roomDiscount',
+  fnbTotal: 'fnbTotal',
+  companionTotal: 'companionTotal',
+  subTotal: 'subTotal',
+  tax: 'tax',
+  service: 'service',
+  grandTotal: 'grandTotal',
+  note: 'note'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  method: 'method',
+  status: 'status',
+  amount: 'amount',
+  change: 'change',
+  paidAt: 'paidAt',
+  userId: 'userId',
+  note: 'note',
+  transactionId: 'transactionId'
+};
+
+exports.Prisma.FnbScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  category: 'category',
+  trackStock: 'trackStock',
+  stock: 'stock',
+  price: 'price',
+  deleted: 'deleted'
+};
+
+exports.Prisma.FnbTrackStockScalarFieldEnum = {
+  id: 'id',
+  suplayer: 'suplayer',
+  fnbId: 'fnbId',
+  userId: 'userId',
+  type: 'type',
+  qty: 'qty',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.FnbOrderScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  transactionId: 'transactionId',
+  itemId: 'itemId',
+  total: 'total',
+  note: 'note',
+  draftAt: 'draftAt',
+  sendAt: 'sendAt',
+  cancelAt: 'cancelAt'
+};
+
+exports.Prisma.FnbItemScalarFieldEnum = {
+  id: 'id',
+  fnbId: 'fnbId',
+  qty: 'qty',
+  name: 'name',
+  price: 'price',
+  category: 'category'
+};
+
+exports.Prisma.CompanionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  hourlyRate: 'hourlyRate',
+  available: 'available'
+};
+
+exports.Prisma.CompanionOrderScalarFieldEnum = {
+  id: 'id',
+  companionId: 'companionId',
+  durationMinute: 'durationMinute',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  total: 'total',
+  finisedAt: 'finisedAt',
+  canceldAt: 'canceldAt',
+  createdAt: 'createdAt',
+  transactionId: 'transactionId'
 };
 
 exports.Prisma.SortOrder = {
@@ -160,6 +249,44 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.CustomerOrderByRelevanceFieldEnum = {
   name: 'name',
   phone: 'phone'
+};
+
+exports.Prisma.TransactionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  note: 'note'
+};
+
+exports.Prisma.PaymentOrderByRelevanceFieldEnum = {
+  note: 'note',
+  transactionId: 'transactionId'
+};
+
+exports.Prisma.FnbOrderByRelevanceFieldEnum = {
+  name: 'name'
+};
+
+exports.Prisma.FnbTrackStockOrderByRelevanceFieldEnum = {
+  id: 'id',
+  suplayer: 'suplayer'
+};
+
+exports.Prisma.FnbOrderOrderByRelevanceFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  note: 'note'
+};
+
+exports.Prisma.FnbItemOrderByRelevanceFieldEnum = {
+  name: 'name'
+};
+
+exports.Prisma.CompanionOrderByRelevanceFieldEnum = {
+  name: 'name'
+};
+
+exports.Prisma.CompanionOrderOrderByRelevanceFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId'
 };
 exports.UserRole = exports.$Enums.UserRole = {
   ADMIN: 'ADMIN',
@@ -206,12 +333,25 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.TypeTrackStock = exports.$Enums.TypeTrackStock = {
+  IN: 'IN',
+  OUT: 'OUT'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Setting: 'Setting',
   Room: 'Room',
   Customer: 'Customer',
-  Session: 'Session'
+  Session: 'Session',
+  Transaction: 'Transaction',
+  Payment: 'Payment',
+  Fnb: 'Fnb',
+  FnbTrackStock: 'FnbTrackStock',
+  FnbOrder: 'FnbOrder',
+  FnbItem: 'FnbItem',
+  Companion: 'Companion',
+  CompanionOrder: 'CompanionOrder'
 };
 /**
  * Create the Client
@@ -260,13 +400,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum UserRole {\n  ADMIN\n  STAFF\n}\n\nenum RoomStatus {\n  AVAILABLE\n  OCCUPIED\n  MAINTENANCE\n  OFFLINE\n  DISABLED\n}\n\nenum TransactionStatus {\n  PENDING\n  PAID\n  CANCEL\n  CLOSE\n}\n\nenum FnbCategory {\n  FOOD\n  DRINK\n  SNACK\n  OTHER\n}\n\nenum PaymentMethod {\n  CASH\n  TRANSFER\n  QRIS\n}\n\nenum PaymentStatus {\n  PENDING\n  PAID\n  CANCELLED\n}\n\nenum OrderStatus {\n  DRAFT\n  SEND\n  CANCELLED\n}\n\nmodel User {\n  id       Int      @id @default(autoincrement())\n  username String   @unique @db.VarChar(50)\n  password String\n  role     UserRole @default(STAFF)\n\n  deleted Boolean @default(false)\n}\n\nmodel Setting {\n  id             Int     @id @default(autoincrement())\n  isActive       Boolean @default(true)\n  taxPercent     Decimal @default(10.00) @db.Decimal(5, 2) // %\n  servicePercent Decimal @default(5.00) @db.Decimal(5, 2) // %\n}\n\nmodel Room {\n  id         Int        @id @default(autoincrement())\n  name       String     @unique\n  capacity   Int        @default(0)\n  type       String     @default(\"medium\")\n  hourlyRate Decimal    @default(0) @db.Decimal(12, 2)\n  status     RoomStatus @default(AVAILABLE)\n\n  session Session[]\n}\n\nmodel Customer {\n  id    Int     @id @default(autoincrement())\n  name  String\n  phone String?\n\n  session Session[]\n}\n\nmodel Session {\n  id         Int      @id @default(autoincrement())\n  customerId Int\n  customer   Customer @relation(fields: [customerId], references: [id])\n\n  roomId Int\n  room   Room @relation(fields: [roomId], references: [id])\n\n  startTime DateTime\n  endTime   DateTime\n  closed    Boolean  @default(false)\n\n  durationMinute Int\n  extraMinute    Int @default(0)\n  freeMinute     Int @default(0)\n\n  deleted Boolean @default(false)\n\n  createdAt DateTime @default(now())\n\n  @@index([customerId])\n  @@index([roomId])\n  @@index([createdAt])\n}\n",
-  "inlineSchemaHash": "6161d0d3d9d21447fd3867b1e672879825d075c31135d4841d4c68b755e05bb2",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n//////////////////////////////////////////////////////\n// ENUM\n//////////////////////////////////////////////////////\n\nenum UserRole {\n  ADMIN\n  STAFF\n}\n\nenum RoomStatus {\n  AVAILABLE\n  OCCUPIED\n  MAINTENANCE\n  OFFLINE\n  DISABLED\n}\n\nenum TransactionStatus {\n  PENDING\n  PAID\n  CANCEL\n  CLOSE\n}\n\nenum FnbCategory {\n  FOOD\n  DRINK\n  SNACK\n  OTHER\n}\n\nenum PaymentMethod {\n  CASH\n  TRANSFER\n  QRIS\n}\n\nenum PaymentStatus {\n  PENDING\n  PAID\n  CANCELLED\n}\n\nenum OrderStatus {\n  DRAFT\n  SEND\n  CANCELLED\n}\n\nenum TypeTrackStock {\n  IN // stok masuk (pembelian, restock, retur masuk)\n  OUT // stok keluar (penjualan, pemakaian, retur keluar)\n}\n\n//////////////////////////////////////////////////////\n// MODELS\n//////////////////////////////////////////////////////\n\nmodel User {\n  id       Int      @id @default(autoincrement())\n  username String   @unique @db.VarChar(50)\n  password String\n  role     UserRole @default(STAFF)\n\n  deleted Boolean @default(false)\n\n  payment       Payment[]\n  fnbTrackStock FnbTrackStock[]\n}\n\nmodel Setting {\n  id             Int     @id @default(autoincrement())\n  isActive       Boolean @unique @default(true)\n  taxPercent     Decimal @default(10.00) @db.Decimal(5, 2) // %\n  servicePercent Decimal @default(5.00) @db.Decimal(5, 2) // %\n}\n\nmodel Room {\n  id         Int        @id @default(autoincrement())\n  name       String     @unique\n  capacity   Int        @default(0)\n  type       String     @default(\"medium\")\n  hourlyRate Decimal    @default(0) @db.Decimal(12, 2)\n  status     RoomStatus @default(AVAILABLE)\n\n  session Session[]\n}\n\nmodel Customer {\n  id    Int     @id @default(autoincrement())\n  name  String\n  phone String?\n\n  session Session[]\n}\n\nmodel Session {\n  id         Int      @id @default(autoincrement())\n  customerId Int\n  customer   Customer @relation(fields: [customerId], references: [id])\n\n  roomId Int\n  room   Room @relation(fields: [roomId], references: [id])\n\n  startTime DateTime\n  endTime   DateTime\n  closed    Boolean  @default(false)\n\n  durationMinute Int\n  extraMinute    Int @default(0)\n  freeMinute     Int @default(0)\n\n  deleted Boolean @default(false)\n\n  userId  Int\n  userOut Int?\n\n  createdAt   DateTime      @default(now())\n  transaction Transaction[]\n\n  @@index([customerId])\n  @@index([roomId])\n  @@index([createdAt])\n}\n\nmodel Transaction {\n  id String @id @default(uuid()) // inv number\n\n  sessionId Int\n  session   Session @relation(fields: [sessionId], references: [id])\n\n  roomTotal      Decimal @db.Decimal(12, 2)\n  roomDiscount   Decimal @default(0) @db.Decimal(12, 2)\n  fnbTotal       Decimal @default(0) @db.Decimal(12, 2)\n  companionTotal Decimal @default(0) @db.Decimal(12, 2)\n  subTotal       Decimal @default(0) @db.Decimal(12, 2)\n  tax            Decimal @default(0) @db.Decimal(12, 2)\n  service        Decimal @default(0) @db.Decimal(12, 2)\n  grandTotal     Decimal @default(0) @db.Decimal(12, 2)\n\n  note String?\n\n  fnbOrder FnbOrder[]\n  payment  Payment[]\n\n  companionOrder CompanionOrder[]\n}\n\nmodel Payment {\n  id     Int           @id @default(autoincrement())\n  method PaymentMethod @default(CASH)\n  status PaymentStatus @default(PENDING)\n  amount Decimal       @default(0) @db.Decimal(12, 2)\n  change Decimal       @default(0) @db.Decimal(12, 2)\n\n  paidAt DateTime?\n\n  userId Int\n  user   User @relation(fields: [userId], references: [id])\n\n  note String?\n\n  transactionId String\n  transaction   Transaction @relation(fields: [transactionId], references: [id])\n}\n\nmodel Fnb {\n  id       Int         @id @default(autoincrement())\n  name     String      @unique\n  category FnbCategory @default(OTHER)\n\n  trackStock Boolean @default(true)\n  stock      Int     @default(0)\n\n  price Decimal @default(0) @db.Decimal(12, 2)\n\n  deleted Boolean @default(false)\n\n  fnbTrackStock FnbTrackStock[]\n  fnbItem       FnbItem[]\n}\n\nmodel FnbTrackStock {\n  id       String         @id @default(uuid()) // nomor faktur dari supplier\n  suplayer String\n  fnbId    Int\n  fnb      Fnb            @relation(fields: [fnbId], references: [id])\n  userId   Int\n  user     User           @relation(fields: [userId], references: [id])\n  type     TypeTrackStock\n  qty      Int\n\n  createdAt DateTime @default(now())\n}\n\nmodel FnbOrder {\n  id            String      @id @default(uuid()) // inv number\n  status        OrderStatus @default(DRAFT)\n  transactionId String\n  transaction   Transaction @relation(fields: [transactionId], references: [id])\n  itemId        Int\n  item          FnbItem     @relation(fields: [itemId], references: [id])\n\n  total Decimal @default(0) @db.Decimal(12, 2)\n\n  note String?\n\n  draftAt  DateTime  @default(now())\n  sendAt   DateTime?\n  cancelAt DateTime?\n}\n\nmodel FnbItem {\n  id       Int        @id @default(autoincrement())\n  fnbId    Int\n  fnb      Fnb        @relation(fields: [fnbId], references: [id])\n  fnbOrder FnbOrder[]\n\n  qty      Int\n  // snapshot\n  name     String\n  price    Decimal     @default(0) @db.Decimal(12, 2)\n  category FnbCategory @default(OTHER)\n}\n\nmodel Companion {\n  id         Int     @id @default(autoincrement())\n  name       String\n  hourlyRate Decimal @default(0) @db.Decimal(12, 2)\n  available  Boolean @default(true)\n\n  companionOrder CompanionOrder[]\n}\n\nmodel CompanionOrder {\n  id          String    @id @default(uuid())\n  companionId Int\n  companion   Companion @relation(fields: [companionId], references: [id])\n\n  durationMinute Int\n  startTime      DateTime\n  endTime        DateTime\n  total          Decimal   @default(0) @db.Decimal(12, 2)\n  finisedAt      DateTime?\n  canceldAt      DateTime?\n  createdAt      DateTime  @default(now())\n\n  transactionId String\n  transaction   Transaction @relation(fields: [transactionId], references: [id])\n}\n",
+  "inlineSchemaHash": "ec2406f1e77d8a1286fc490feafdcd9d29db3676eb7d0b5bda81503a50e071d5",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"}],\"dbName\":null},\"Setting\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"taxPercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"servicePercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"}],\"dbName\":null},\"Room\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"capacity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hourlyRate\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"RoomStatus\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"RoomToSession\"}],\"dbName\":null},\"Customer\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"CustomerToSession\"}],\"dbName\":null},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"customerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"customer\",\"kind\":\"object\",\"type\":\"Customer\",\"relationName\":\"CustomerToSession\"},{\"name\":\"roomId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"room\",\"kind\":\"object\",\"type\":\"Room\",\"relationName\":\"RoomToSession\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"closed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"durationMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"extraMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"freeMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"payment\",\"kind\":\"object\",\"type\":\"Payment\",\"relationName\":\"PaymentToUser\"},{\"name\":\"fnbTrackStock\",\"kind\":\"object\",\"type\":\"FnbTrackStock\",\"relationName\":\"FnbTrackStockToUser\"}],\"dbName\":null},\"Setting\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"taxPercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"servicePercent\",\"kind\":\"scalar\",\"type\":\"Decimal\"}],\"dbName\":null},\"Room\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"capacity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hourlyRate\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"RoomStatus\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"RoomToSession\"}],\"dbName\":null},\"Customer\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"CustomerToSession\"}],\"dbName\":null},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"customerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"customer\",\"kind\":\"object\",\"type\":\"Customer\",\"relationName\":\"CustomerToSession\"},{\"name\":\"roomId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"room\",\"kind\":\"object\",\"type\":\"Room\",\"relationName\":\"RoomToSession\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"closed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"durationMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"extraMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"freeMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userOut\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"transaction\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"SessionToTransaction\"}],\"dbName\":null},\"Transaction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sessionId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToTransaction\"},{\"name\":\"roomTotal\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"roomDiscount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"fnbTotal\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"companionTotal\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"subTotal\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"tax\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"service\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"grandTotal\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fnbOrder\",\"kind\":\"object\",\"type\":\"FnbOrder\",\"relationName\":\"FnbOrderToTransaction\"},{\"name\":\"payment\",\"kind\":\"object\",\"type\":\"Payment\",\"relationName\":\"PaymentToTransaction\"},{\"name\":\"companionOrder\",\"kind\":\"object\",\"type\":\"CompanionOrder\",\"relationName\":\"CompanionOrderToTransaction\"}],\"dbName\":null},\"Payment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"method\",\"kind\":\"enum\",\"type\":\"PaymentMethod\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"change\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"paidAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PaymentToUser\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"transactionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"transaction\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"PaymentToTransaction\"}],\"dbName\":null},\"Fnb\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"category\",\"kind\":\"enum\",\"type\":\"FnbCategory\"},{\"name\":\"trackStock\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"stock\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"deleted\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"fnbTrackStock\",\"kind\":\"object\",\"type\":\"FnbTrackStock\",\"relationName\":\"FnbToFnbTrackStock\"},{\"name\":\"fnbItem\",\"kind\":\"object\",\"type\":\"FnbItem\",\"relationName\":\"FnbToFnbItem\"}],\"dbName\":null},\"FnbTrackStock\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"suplayer\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fnbId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fnb\",\"kind\":\"object\",\"type\":\"Fnb\",\"relationName\":\"FnbToFnbTrackStock\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"FnbTrackStockToUser\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"TypeTrackStock\"},{\"name\":\"qty\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"FnbOrder\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"OrderStatus\"},{\"name\":\"transactionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"transaction\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"FnbOrderToTransaction\"},{\"name\":\"itemId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"item\",\"kind\":\"object\",\"type\":\"FnbItem\",\"relationName\":\"FnbItemToFnbOrder\"},{\"name\":\"total\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"draftAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sendAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"cancelAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"FnbItem\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fnbId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fnb\",\"kind\":\"object\",\"type\":\"Fnb\",\"relationName\":\"FnbToFnbItem\"},{\"name\":\"fnbOrder\",\"kind\":\"object\",\"type\":\"FnbOrder\",\"relationName\":\"FnbItemToFnbOrder\"},{\"name\":\"qty\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"category\",\"kind\":\"enum\",\"type\":\"FnbCategory\"}],\"dbName\":null},\"Companion\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hourlyRate\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"available\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"companionOrder\",\"kind\":\"object\",\"type\":\"CompanionOrder\",\"relationName\":\"CompanionToCompanionOrder\"}],\"dbName\":null},\"CompanionOrder\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companionId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"companion\",\"kind\":\"object\",\"type\":\"Companion\",\"relationName\":\"CompanionToCompanionOrder\"},{\"name\":\"durationMinute\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"total\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"finisedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"canceldAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"transactionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"transaction\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"CompanionOrderToTransaction\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

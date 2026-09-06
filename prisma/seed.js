@@ -15,6 +15,17 @@ async function main() {
   });
   console.log("✅ Default admin created");
 
+  await prisma.setting.upsert({
+    where: {
+      isActive: true,
+    },
+    update: {},
+    create: {
+      isActive: true,
+    },
+  });
+  console.log("✅ Default setting created");
+
   // Buat 20 room R01–R20
   const rooms = [];
   for (let i = 1; i <= 20; i++) {

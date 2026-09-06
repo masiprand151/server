@@ -8,6 +8,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//////////////////////////////////////////////////////
+// ENUM
+//////////////////////////////////////////////////////
+
 enum UserRole {
   ADMIN
   STAFF
@@ -53,6 +57,15 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum TypeTrackStock {
+  IN // stok masuk (pembelian, restock, retur masuk)
+  OUT // stok keluar (penjualan, pemakaian, retur keluar)
+}
+
+//////////////////////////////////////////////////////
+// MODELS
+//////////////////////////////////////////////////////
+
 model User {
   id       Int      @id @default(autoincrement())
   username String   @unique @db.VarChar(50)
@@ -60,11 +73,14 @@ model User {
   role     UserRole @default(STAFF)
 
   deleted Boolean @default(false)
+
+  payment       Payment[]
+  fnbTrackStock FnbTrackStock[]
 }
 
 model Setting {
   id             Int     @id @default(autoincrement())
-  isActive       Boolean @default(true)
+  isActive       Boolean @unique @default(true)
   taxPercent     Decimal @default(10.00) @db.Decimal(5, 2) // %
   servicePercent Decimal @default(5.00) @db.Decimal(5, 2) // %
 }
@@ -106,9 +122,139 @@ model Session {
 
   deleted Boolean @default(false)
 
-  createdAt DateTime @default(now())
+  userId  Int
+  userOut Int?
+
+  createdAt   DateTime      @default(now())
+  transaction Transaction[]
 
   @@index([customerId])
   @@index([roomId])
   @@index([createdAt])
+}
+
+model Transaction {
+  id String @id @default(uuid()) // inv number
+
+  sessionId Int
+  session   Session @relation(fields: [sessionId], references: [id])
+
+  roomTotal      Decimal @db.Decimal(12, 2)
+  roomDiscount   Decimal @default(0) @db.Decimal(12, 2)
+  fnbTotal       Decimal @default(0) @db.Decimal(12, 2)
+  companionTotal Decimal @default(0) @db.Decimal(12, 2)
+  subTotal       Decimal @default(0) @db.Decimal(12, 2)
+  tax            Decimal @default(0) @db.Decimal(12, 2)
+  service        Decimal @default(0) @db.Decimal(12, 2)
+  grandTotal     Decimal @default(0) @db.Decimal(12, 2)
+
+  note String?
+
+  fnbOrder FnbOrder[]
+  payment  Payment[]
+
+  companionOrder CompanionOrder[]
+}
+
+model Payment {
+  id     Int           @id @default(autoincrement())
+  method PaymentMethod @default(CASH)
+  status PaymentStatus @default(PENDING)
+  amount Decimal       @default(0) @db.Decimal(12, 2)
+  change Decimal       @default(0) @db.Decimal(12, 2)
+
+  paidAt DateTime?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  note String?
+
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+}
+
+model Fnb {
+  id       Int         @id @default(autoincrement())
+  name     String      @unique
+  category FnbCategory @default(OTHER)
+
+  trackStock Boolean @default(true)
+  stock      Int     @default(0)
+
+  price Decimal @default(0) @db.Decimal(12, 2)
+
+  deleted Boolean @default(false)
+
+  fnbTrackStock FnbTrackStock[]
+  fnbItem       FnbItem[]
+}
+
+model FnbTrackStock {
+  id       String         @id @default(uuid()) // nomor faktur dari supplier
+  suplayer String
+  fnbId    Int
+  fnb      Fnb            @relation(fields: [fnbId], references: [id])
+  userId   Int
+  user     User           @relation(fields: [userId], references: [id])
+  type     TypeTrackStock
+  qty      Int
+
+  createdAt DateTime @default(now())
+}
+
+model FnbOrder {
+  id            String      @id @default(uuid()) // inv number
+  status        OrderStatus @default(DRAFT)
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  itemId        Int
+  item          FnbItem     @relation(fields: [itemId], references: [id])
+
+  total Decimal @default(0) @db.Decimal(12, 2)
+
+  note String?
+
+  draftAt  DateTime  @default(now())
+  sendAt   DateTime?
+  cancelAt DateTime?
+}
+
+model FnbItem {
+  id       Int        @id @default(autoincrement())
+  fnbId    Int
+  fnb      Fnb        @relation(fields: [fnbId], references: [id])
+  fnbOrder FnbOrder[]
+
+  qty      Int
+  // snapshot
+  name     String
+  price    Decimal     @default(0) @db.Decimal(12, 2)
+  category FnbCategory @default(OTHER)
+}
+
+model Companion {
+  id         Int     @id @default(autoincrement())
+  name       String
+  hourlyRate Decimal @default(0) @db.Decimal(12, 2)
+  available  Boolean @default(true)
+
+  companionOrder CompanionOrder[]
+}
+
+model CompanionOrder {
+  id          String    @id @default(uuid())
+  companionId Int
+  companion   Companion @relation(fields: [companionId], references: [id])
+
+  durationMinute Int
+  startTime      DateTime
+  endTime        DateTime
+  total          Decimal   @default(0) @db.Decimal(12, 2)
+  finisedAt      DateTime?
+  canceldAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
 }
