@@ -114,4 +114,49 @@ const checkin = async (req, res, next) => {
   }
 };
 
-module.exports = { checkin };
+const getSessionById = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+
+    const session = await prisma.session.findUnique({
+      where: {
+        id: Number(sessionId),
+      },
+      include: {
+        customer: true,
+        room: true,
+        transaction: {
+          include: {
+            fnbOrder: {
+              include: {
+                item: {
+                  include: {
+                    fnb: true,
+                  },
+                },
+              },
+            },
+
+            companionOrder: {
+              include: {
+                companion: true,
+              },
+            },
+            payment: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      data: {
+        ...session,
+        transaction: session.transaction[0],
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { checkin, getSessionById };
