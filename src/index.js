@@ -15,6 +15,7 @@ web.use(express.json());
 web.use(require("./routes/user.route"));
 web.use(require("./routes/room.route"));
 web.use(require("./routes/session.route"));
+web.use(require("./routes/fnb.route"));
 
 web.use((err, req, res, next) => {
   console.log(err);

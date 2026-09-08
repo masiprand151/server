@@ -42,6 +42,28 @@ async function main() {
     skipDuplicates: true, // aman kalau seed dijalankan ulang
   });
   console.log("✅ 20 Rooms created");
+
+  const fnbData = [
+    { name: "Nasi Goreng", category: "FOOD", price: 25000 },
+    { name: "Mie Goreng", category: "FOOD", price: 22000 },
+    {
+      name: "Kentang Goreng",
+      category: "SNACK",
+      price: 18000,
+    },
+    { name: "Chicken Wings", category: "FOOD", price: 30000 },
+    { name: "Es Teh", category: "DRINK", price: 8000 },
+    { name: "Coca Cola", category: "DRINK", price: 12000 },
+    { name: "Air Mineral", category: "DRINK", price: 7000 },
+    { name: "Kacang", category: "SNACK", price: 10000 },
+  ];
+
+  await prisma.fnb.createMany({
+    data: fnbData,
+    skipDuplicates: true,
+  });
+
+  console.log("✅ Ferst fnb data created");
 }
 
 main()
