@@ -12,6 +12,10 @@ web.use(
 
 web.use(express.json());
 
+web.get("/test", (req, res, next) => {
+  res.send("ok");
+});
+
 web.use(require("./routes/user.route"));
 web.use(require("./routes/room.route"));
 web.use(require("./routes/session.route"));
@@ -26,11 +30,11 @@ web.use((err, req, res, next) => {
 
   if (err instanceof AppError) {
     return res.status(err.status).json({
-      error: err.message,
+      message: err.message,
     });
   } else {
     return res.status(500).json({
-      error: "Internal Server Error!",
+      message: "Internal Server Error!",
     });
   }
 });

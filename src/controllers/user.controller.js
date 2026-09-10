@@ -51,4 +51,27 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { login };
+const me = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(req.user.id),
+      },
+      omit: {
+        password: true,
+      },
+    });
+
+    if (!user) {
+      throw new AppError(404, "User not found");
+    }
+
+    res.status(200).json({
+      user: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { login, me };
